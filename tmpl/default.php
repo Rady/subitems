@@ -10,6 +10,15 @@
 defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
+
+$isShowChild = $params->get('showchild');
+
+$exmenuChildArr = array();
+
+if($params->get('excludechildids')){
+	$exmenuChildArr   = explode(",", $params->get('excludechildids'));
+}
+
 ?>
 
 <ul class="nav<?php echo $class_sfx;?>"<?php
@@ -58,17 +67,42 @@ foreach ($items as $i => &$item) :
 		case 'separator':
 		case 'url':
 		case 'component':
-			require JModuleHelper::getLayoutPath('mod_menu', 'default_'.$item->type);
+			require JModuleHelper::getLayoutPath('mod_subitems', 'default_'.$item->type);
 			break;
 
 		default:
-			require JModuleHelper::getLayoutPath('mod_menu', 'default_url');
+			require JModuleHelper::getLayoutPath('mod_subitems', 'default_url');
 			break;
 	endswitch;
 
 	// The next item is deeper.
-	if ($item->deeper) {
-		echo '<ul>';
+	if ($item->parent) {
+		// deal the child
+		$childItems = null;
+		if( $isShowChild ){
+			if(!in_array($item->id,$exmenuChildArr)){
+				$childItems = ModSubItemsHelper::getList($params,$item->id);
+				if($childItems){
+					echo "<ul>";
+					foreach ($childItems as $citem) {
+             // Render the menu item.
+							switch ($citem->type) :
+								case 'separator':
+								case 'url':
+								case 'component':
+									require JModuleHelper::getLayoutPath('mod_subitems', 'default_child_'.$citem->type);
+									break;
+
+								default:
+									require JModuleHelper::getLayoutPath('mod_subitems', 'default_child_url');
+									break;
+							endswitch;
+					}
+					echo "</ul>";
+				}
+			}
+		}
+
 	}
 	// The next item is shallower.
 	elseif ($item->shallower) {
