@@ -85,6 +85,28 @@ foreach ($items as $i => &$item) :
 				if($childItems){
 					echo "<ul>";
 					foreach ($childItems as $citem) {
+            $classChild = 'item-'.$citem->id;
+						if ($citem->id == $active_id) {
+							$classChild .= ' current';
+						}
+
+						if (in_array($citem->id, $path)) {
+							$classChild .= ' active';
+						}
+						elseif ($citem->type == 'alias') {
+							$aliasToId = $citem->params->get('aliasoptions');
+							if (count($path) > 0 && $aliasToId == $path[count($path)-1]) {
+								$classChild .= ' active';
+							}
+							elseif (in_array($aliasToId, $path)) {
+								$classChild .= ' alias-parent-active';
+							}
+						}
+						if (!empty($classChild)) {
+							$classChild = ' class="'.trim($classChild) .'"';
+						}
+
+						echo '<li'.$classChild.'>';
              // Render the menu item.
 							switch ($citem->type) :
 								case 'separator':
@@ -97,6 +119,7 @@ foreach ($items as $i => &$item) :
 									require JModuleHelper::getLayoutPath('mod_subitems', 'default_child_url');
 									break;
 							endswitch;
+						echo "</li>";
 					}
 					echo "</ul>";
 				}
