@@ -23,7 +23,7 @@ $path	= isset($active) ? $active->tree : array();
 $items = ModSubItemsHelper::getList($params);
 $parent = ModSubItemsHelper::getParent($params);
 
-$class_sfx	= htmlspecialchars($params->get('class_sfx'));
+$class_sfx	= htmlspecialchars($params->get('moduleclass_sfx'));
 
 if(count($items)) {
 	require JModuleHelper::getLayoutPath('mod_subitems', $params->get('layout', 'default'));
